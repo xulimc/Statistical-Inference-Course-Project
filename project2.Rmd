@@ -1,0 +1,228 @@
+---
+title: "The Influence of Supplement Type and Dose Level on Tooth Growth"
+author: "Li Xu"
+output: pdf_document
+---
+
+##Overview
+This report studies the influence of supplement type and dose level on tooth growth of guinea pigs. We consider two types of supplement (Vitamin C and Orange Juice) and three levels of dose (0.5mg, 1mg and 2mg). And we examine the difference of tooth length among different groups by hypothesis testing.
+
+##Data Set
+The data set "ToothGrowth" records tooth growth in guinea pigs, including 60 observations and 3 features. The three features are len (tooth length), supp (supplement type: Vitamin C or Orange Juice) and dose (dose in milligrams: 0.5, 1 or 2). We can obtain its description by R command "**?ToothGrowth**". This data set is loaded by typing
+
+```R
+library(datasets)
+tg<-ToothGrowth
+```
+
+##Exploratory Data Analysis
+
+The structure of "ToothGrowth" is
+```R
+'data.frame':  60 obs. of  3 variables:
+ $ len : num  4.2 11.5 7.3 5.8 6.4 10 11.2 11.2 5.2 7 ...
+ $ supp: Factor w/ 2 levels "OJ","VC": 2 2 2 2 2 2 2 2 2 2 ...
+ $ dose: num  0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 ...
+```
+
+and the summary of "ToothGrowth" is as follows:
+
+```R
+      len        supp         dose      
+ Min.   : 4.20   OJ:30   Min.   :0.500  
+ 1st Qu.:13.07   VC:30   1st Qu.:0.500  
+ Median :19.25           Median :1.000  
+ Mean   :18.81           Mean   :1.167  
+ 3rd Qu.:25.27           3rd Qu.:2.000  
+ Max.   :33.90           Max.   :2.000
+```
+
+Histograms of "len" based on supplement type and dose level can be found in Figure 1 and Figure 2 (implemented by Code 1 in Appendix). We also fit the linear regression models for "len" onto "dose" and "supp" respectively (see Code 2 in Appendix). Their boxplots can be found in Figure 3.
+
+##Comparison of Tooth Length by "supp" and "dose"
+
+###Test One: by "supp"
+Here, we compare the tooth length of guinea pigs by "supp". We first set the null hypothesis 
+```R
+H0: Tooth length has no difference between VC group and OJ group.
+```
+Type 
+```R
+t.test(len~supp,data=tg)$coef
+```
+we obtain the 95% confidence interval
+
+```R
+-0.1710156  7.5710156
+```
+The 95% confidence interval contains 0. Hence, we cannot reject null hypothesis, and there is no significant difference between these two groups.
+
+###Test Two: by "dose"
+Since "dose" has three levels: 0.5, 1, 2, we compare any pairs of the three levels. We divide the data set into three groups, by typing
+```R
+dose.5<-subset(tg,tg["dose"]==0.5)$len
+dose1<-subset(tg,tg["dose"]==1)$len
+dose2<-subset(tg,tg["dose"]==2)$len
+```
+The three null hypotheses are
+```R
+H0: Tooth length has no difference between 0.5-dose group and 1-dose group.
+H0: Tooth length has no difference between 0.5-dose group and 2-dose group.
+H0: Tooth length has no difference between 1-dose group and 2-dose group.
+```
+Then we use t-test by typing
+```R
+t.test(dose.5,dose1)$conf
+t.test(dose.5,dose2)$conf
+t.test(dose1,dose2)$conf
+```
+and obtain three 95% confidence intervals
+```R
+-11.983781  -6.276219
+-18.15617 -12.83383
+-8.996481 -3.733519
+```
+Notice that all these interval do not contain 0. We then reject all three null hypotheses, and conclude that tooth length has significant difference among different groups. Also the lower and upper bounds are negative, implying 
+```R
+tooth length in 2-dose group > tooth length in 1-dose group > tooth length in 0.5-dose group
+```
+
+###Test Three: by both "supp" and "dose"
+
+####Fix dose level:
+
+For a fixed level of "dose", we compare the tooth length between VC group and OJ group. The three null hypotheses are 
+```R
+H0: Tooth length has no difference between 0.5-dose VC group and 0.5-dose OJ group.
+H0: Tooth length has no difference between 1-dose VC group and 1-dose OJ group.
+H0: Tooth length has no difference between 2-dose VC group and 2-dose OJ group.
+```
+We divide the data set into three groups and use t-test to obtain three 95% confidence intervals (see Code 3 in Appendix) as follows:
+
+```R
+1.719057 8.780943
+2.802148 9.057852
+-3.79807  3.63807
+```
+We reject the first two hypotheses and cannot reject the third. That shows that in both 0.5-dose case and 1-dose case, the tooth length in OJ group is larger than that in VC group.
+
+####Fix supplement type:
+
+For a fixed type of supplement, we compare the tooth length among 0.5-dose, 1-dose and 2-dose groups. The six null hypotheses are 
+```R
+H0: Tooth length has no difference between 0.5-dose VC group and 1-dose VC group.
+H0: Tooth length has no difference between 0.5-dose VC group and 2-dose VC group.
+H0: Tooth length has no difference between 1-dose VC group and 2-dose VC group.
+H0: Tooth length has no difference between 0.5-dose OJ group and 1-dose OJ group.
+H0: Tooth length has no difference between 0.5-dose OJ group and 2-dose OJ group.
+H0: Tooth length has no difference between 1-dose OJ group and 2-dose OJ group.
+```
+
+We divide the data set into six groups and conduct t-test to obtain six 95% confidence intervals (see Code 4 in Appendix).
+
+
+```R
+-11.265712  -6.314288
+-21.90151 -14.41849
+-13.054267  -5.685733
+-13.415634  -5.524366
+-16.335241  -9.324759
+-6.5314425 -0.1885575
+```
+We reject all six hypotheses and conclude that in all six comparison, the tooth length in the latter group is larger than that in the former.
+
+##Conclusion:
+1. As the dose increases, the tooth length will increase.
+2. In both 0.5-dose and 1-dose groups, orange juice has more positive effect on tooth growth than vitamin C.
+
+
+##Necessary Assumptions:
+1. No other factors except supplement type and dose level influence tooth growth.
+2. The samples represent the entire population of guinea pigs.
+3. Guinea pigs are randomly assigned to the six groups.
+
+##Appendix
+
+
+###Code 1
+
+```R
+hist(subset(tg,tg["dose"]==0.5)$len,xlab="length",main="dose=0.5")
+hist(subset(tg,tg["dose"]==1)$len,xlab="length",main="dose=1")
+hist(subset(tg,tg["dose"]==2)$len,xlab="length",main="dose=2")
+hist(subset(tg,tg["supp"]=="VC")$len,xlab="length",main="supp=VC")
+hist(subset(tg,tg["supp"]=="OJ")$len,xlab="length",main="supp=OJ")
+```
+
+###Code 2
+
+```R
+boxplot(len~supp, data=ToothGrowth,xlab="Supplement Type",ylab="Tooth Length",
++names=c("VC","OJ"),main="len onto supp",col="blue") 
+boxplot(len~dose, data=ToothGrowth,xlab="Dose in Milligrams",ylab="Tooth Length",
++names=c("0.5","1","2"),main="len onto dose",col="blue") 
+```
+
+###Code 3
+
+```R
+dose.5<-subset(tg,tg["dose"]==0.5)
+dose1<-subset(tg,tg["dose"]==1)
+dose2<-subset(tg,tg["dose"]==2)
+t.test(len~supp,data=dose.5)$conf
+t.test(len~supp,data=dose1)$conf
+t.test(len~supp,data=dose2)$conf
+```
+
+###Code 4
+
+```R
+dose.5VC<-subset(tg,tg["dose"]==0.5&tg["supp"]=="VC")$len
+dose1VC<-subset(tg,tg["dose"]==1&tg["supp"]=="VC")$len
+dose2VC<-subset(tg,tg["dose"]==2&tg["supp"]=="VC")$len
+dose.5OJ<-subset(tg,tg["dose"]==0.5&tg["supp"]=="OJ")$len
+dose1OJ<-subset(tg,tg["dose"]==1&tg["supp"]=="OJ")$len
+dose2OJ<-subset(tg,tg["dose"]==2&tg["supp"]=="OJ")$len
+
+t.test(dose.5VC,dose1VC)$conf
+t.test(dose.5VC,dose2VC)$conf
+t.test(dose1VC,dose2VC)$conf
+t.test(dose.5OJ,dose1OJ)$conf
+t.test(dose.5OJ,dose2OJ)$conf
+t.test(dose1OJ,dose2OJ)$conf
+```
+
+###Figure 1
+
+```{r echo=FALSE,fig.height=2.5}
+par(mfrow=c(1,2))
+library(datasets)
+tg<-ToothGrowth
+hist(subset(tg,tg["supp"]=="VC")$len,xlab="length",main="supp=VC")
+hist(subset(tg,tg["supp"]=="OJ")$len,xlab="length",main="supp=OJ")
+```
+
+
+###Figure 2
+
+```{r echo=FALSE,fig.height=5}
+par(mfrow=c(2,2))
+library(datasets)
+tg<-ToothGrowth
+hist(subset(tg,tg["dose"]==0.5)$len,xlab="length",main="dose=0.5")
+hist(subset(tg,tg["dose"]==1)$len,xlab="length",main="dose=1")
+hist(subset(tg,tg["dose"]==2)$len,xlab="length",main="dose=2")
+```
+
+
+
+
+###Figure 3
+
+```{r,echo=FALSE,fig.height=3.5}
+par(mfrow=c(1,2))
+boxplot(len~supp, data=ToothGrowth,xlab="Supplement Type",ylab="Tooth Length",names=c("VC","OJ"),main="len onto supp",col="blue") 
+boxplot(len~dose, data=ToothGrowth,xlab="Dose in Milligrams",ylab="Tooth Length",names=c("0.5","1","2"),main="len onto dose",col="blue") 
+```
+
+

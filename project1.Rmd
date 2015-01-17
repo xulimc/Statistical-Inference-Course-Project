@@ -1,0 +1,131 @@
+---
+title: "Exponential Distribution and Central Limit Theorem"
+author: "Li Xu"
+output: pdf_document
+---
+
+##Overview
+In this report, we will verify the central limit theorem for exponential distributions. We generate 1000 sample means, each of which is the average of 40 random samples from an exponential distribution. Then we compare the sample mean and variance with the theoretical mean and variance, respectively. Also we will show the empirical distribution is approximately normal.
+
+##Simulations
+Here we generate 40 samples from an exponential distribution with rate 0.2 for 1000 times. Typing
+```R
+lambda<-0.2
+NumberofSamples<-40
+NumberofSimulations<-1000
+set.seed(11111)
+AllMeans<-replicate(NumberofSimulations,mean(rexp(NumberofSamples,lambda)))
+```
+we get 1000 sample means, each of which is the average of 40 random samples. By typing
+```R
+hist(AllMeans)
+```
+the histogram of these sample means is obtained as Figure 1 (see Appendix).
+
+##Sample Mean versus Theoretical Mean
+Notice that each sample point Xi~Exponential(0.2) for i=1,2,...40. Then the **theoretical mean** (i.e. theoretical center of the distribution) is 
+```R
+E[mean]=E[(X1+X2+...+X40)/40]=(E[X1]+E[X2]+...E[X40])/40=5*40/40=5.
+```
+We type 
+```R
+mean(AllMeans)
+```
+and obtain that the **sample mean** (i.e. sample center of the distribution) is
+```R
+[1] 5.020674
+```
+Their difference is
+```R
+[1] 0.020674
+```
+Figure 2 illustrates the difference of these two means (see Appendix).
+
+
+##Sample Variance versus Theoretical Variance
+The **theoretical variance** is 
+```R
+Var[average]=Var[(X1+X2+...+X40)/40]=(Var[X1]+Var[X2]+...Var[X40])/1600=25*40/1600=0.625.
+```
+By typing
+```R
+var(AllMeans)
+```
+the **sample variance** is calculated to be
+```R
+[1] 0.6304973
+```
+Their difference is
+```R
+[1] 0.0054973
+```
+Figure 3 illustrates the difference of these two variances (see Appendix). Here three blue lines indicate the range of **(sample mean-sample standard deviation, sample mean+sample standard deviation)**, and red lines indicate the range of **(theoretical mean-theoretical standard deviation, theoretical mean+theoretical standard deviation)**
+
+##Distribution
+By the central limit theorem, the sample mean should follow a normal distribution with theoretical mean and theoretical variance. We draw the Q-Q plot by typing
+```R
+qqnorm(AllMeans)
+qqline(AllMeans,col="red")
+```
+From figure 4 (see Appendix), we can see that the points are all near the normal line, which implies the empirical distribution is approximately normal.
+
+##Appendix
+
+
+###Figure 1
+
+```{r echo=FALSE,fig.height=4}
+lambda<-0.2
+NumberofSamples<-40
+NumberofSimulations<-1000
+set.seed(11111)
+AllMeans<-replicate(NumberofSimulations,mean(rexp(NumberofSamples,lambda)))
+hist(AllMeans, main="Histogram of sample means")
+```
+
+###Figure 2
+
+```{r echo=FALSE,fig.height=4}
+lambda<-0.2
+NumberofSamples<-40
+NumberofSimulations<-1000
+set.seed(11111)
+AllMeans<-replicate(NumberofSimulations,mean(rexp(NumberofSamples,lambda)))
+hist(AllMeans, main="Comparision between theoretical mean and sample mean")
+abline(v=mean(AllMeans), col="blue",lty=1)
+abline(v=5,col="red",lty=2)
+legend(legend=c("Sample Mean", "Theoretical Mean"), lty=c(1,2), col=c("blue", "red"),x="topright")
+```
+
+
+###Figure 3
+
+```{r echo=FALSE,fig.height=4}
+lambda<-0.2
+NumberofSamples<-40
+NumberofSimulations<-1000
+set.seed(11111)
+AllMeans<-replicate(NumberofSimulations,mean(rexp(NumberofSamples,lambda)))
+hist(AllMeans, main="Comparision between theoretical mean and sample mean")
+abline(v=mean(AllMeans), col="blue",lty=1)
+abline(v=mean(AllMeans)-sd(AllMeans),col="blue",lty=1)
+abline(v=mean(AllMeans)+sd(AllMeans),col="blue",lty=1)
+abline(v=5,col="red",lty=2)
+abline(v=5-sqrt(0.625),col="red",lty=2)
+abline(v=5+sqrt(0.625),col="red",lty=2)
+legend(legend=c("Sample","Theoretical"), lty=c(1,2), col=c("blue", "red"),x="topright")
+```
+
+
+###Figure 4
+
+```{r echo=FALSE,fig.height=4}
+lambda<-0.2
+NumberofSamples<-40
+NumberofSimulations<-1000
+set.seed(11111)
+AllMeans<-replicate(NumberofSimulations,mean(rexp(NumberofSamples,lambda)))
+qqnorm(AllMeans,lty=3)
+qqline(AllMeans,col="red",lty = 3,lwd = 2)
+```
+
